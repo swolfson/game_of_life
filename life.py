@@ -20,11 +20,11 @@ class Cell(object):
 
 			
 class Board(object):
-	def __init__(self, size=10):
+	def __init__(self, size):
 		self.board = {}
 		self.size = size
-		for i in range(size):
-			for j in range(size):
+		for i in range(self.size):
+			for j in range(self.size):
 				self.board[(i,j)] = Cell(False)
 
 		
@@ -53,8 +53,8 @@ class Board(object):
 	
 	def birth_formation_random(self,n):
 		for i in range(n):
-			x = random.randint(0,self.size-1)
-			y = random.randint(0,self.size-1)
+			x = random.randint(5,self.size-5)
+			y = random.randint(5,self.size-5)
 			if not self.board[(x,y)].live:
 				self.birth_cell(x,y)
 	
@@ -126,6 +126,7 @@ class LifeGame(object):
 			print self.game[-1]
 			self.next_board()
 			livecells = self.game[-1].total_live_cells()
+			print str(gen) + ' ' + str(livecells)
 			if livecells < 1:
 				print "cells died" 
 				print "%d gens" %gen
@@ -155,5 +156,5 @@ class LifeGame(object):
 
 
 if __name__ == "__main__":
-	lifegame = LifeGame(30,200)
+	lifegame = LifeGame(35,250)
 	lifegame.play()

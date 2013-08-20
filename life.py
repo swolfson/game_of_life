@@ -11,9 +11,9 @@ class Cell(object):
 	
 	def __str__(self):
 		if self.live:
-			return colored(chr(liveCell),'red')
+			return colored(' '+chr(liveCell),'red')
 		else:
-			return chr(deadCell)
+			return ' ' +chr(deadCell)
 
 
 
@@ -30,22 +30,23 @@ class Board(object):
 		
 	
 	def __str__(self):
-		res = ''
+		res = ' # '*self.size
 		for i in range(self.size -1):
-			res = res + '\n'
+			res = res + '\n'+ '#'
 			for j in range(self.size-1):
 				res = res + ' ' + str(self.board[(i,j)])
+			res += ' #'
 
+		res += '\n' + ' # '*self.size
 		return res
 
 
 	def __eq__(self,other):
 		if not self.size == other.size:
 			return False
-		for i in range(self.size-1):
-			for j in range(self.size-1):
-				if not self.board[(i,j)].live == other.board[(i,j)].live:
-					return False
+		for c in self.board.keys():
+			if not self.board[c].live == other.board[c].live:
+				return False
 		return True
 	
 	def birth_cell(self,x,y):
@@ -87,14 +88,14 @@ class Board(object):
 		n_live_neighbors = self.check_neighbors(x,y)
 		alive = self.board[(x,y)].live
 
-		if alive and n_live_neighbors > 2:
+		if alive and n_live_neighbors < 2:
 			return False
 
 		elif alive and (n_live_neighbors == 2 or n_live_neighbors ==3):
 			return True
 		elif alive and n_live_neighbors > 3:
 			return False
-		elif not alive and n_live_neighbors == 3:
+		elif (not alive) and n_live_neighbors == 3:
 			return True
 		else:
 			return False
@@ -107,18 +108,19 @@ class LifeGame(object):
 	def __init__(self,boardsize,startingNumber):
 		self.game = []
 		self.boardsize = boardsize
-		gen0 = Board(self.boardsize)
+		gen0 = Board(boardsize)
 		gen0.birth_formation_random(startingNumber)
 		self.game.append(gen0)
 	
 	def next_board(self):
-		self.game.append(Board(self.boardsize))
-		currentboard = self.game[-2]
+		currentboard = self.game[-1]
+		nextBoard = Board(self.boardsize)
 		for i in range(self.boardsize):
 			for j in range(self.boardsize):
 				if currentboard.will_live(i,j):
-					self.game[-1].birth_cell(i,j)
+					nextBoard.birth_cell(i,j)
 
+		self.game.append(nextBoard)
 	
 	def play(self):
 		gen = 0
@@ -140,7 +142,7 @@ class LifeGame(object):
 				break
 
 			breaker = 0
-			for item in self.game[:-2]:
+			for item in self.game[-4:-2]:
 				if item == self.game[-1]:
 					print "cells blinking, infinite loop"
 					print "%d gens" %gen

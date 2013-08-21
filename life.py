@@ -1,5 +1,6 @@
 import random
 from termcolor import colored, cprint
+import sys
 
 liveCell = 35
 deadCell = 32
@@ -64,9 +65,14 @@ class Board(object):
 				(x,y-1),(x,y+1),(x+1,y-1),(x+1,y),(x+1,y+1)]
 	
 	 	neighbors = []
-		for coord in potential_neighbors:
+		'''for coord in potential_neighbors:
 			if coord in self.board.keys():
 				neighbors.append(coord)
+		'''
+		for (i,j) in potential_neighbors:
+			if i < self.size and j < self.size:
+				if  i >= 0 and j >= 0 :
+					neighbors.append((i,j))
 		return neighbors
 
 	def check_neighbors(self,x,y):
@@ -106,7 +112,7 @@ class Board(object):
 class LifeGame(object):
 
 	def __init__(self,boardsize,startingNumber):
-		self.game = []
+		self.game = []	#store each generation
 		self.boardsize = boardsize
 		gen0 = Board(boardsize)
 		gen0.birth_formation_random(startingNumber)
@@ -122,30 +128,30 @@ class LifeGame(object):
 
 		self.game.append(nextBoard)
 	
-	def play(self):
-		gen = 0
+	def play(self,display=True):
 		while(1):
-			print self.game[-1]
-			self.next_board()
 			livecells = self.game[-1].total_live_cells()
-			print str(gen) + ' ' + str(livecells)
+			if display:
+				print self.game[-1]
+			print str(len(self.game)) + ' ' + str(livecells)
+
+			self.next_board()
 			if livecells < 1:
 				print "cells died" 
-				print "%d gens" %gen
+				print "%d gens" %len(self.game)
 				break
 			
-			gen +=1
 
 			if self.game[-1] == self.game[-2]:
 				print "cells stabilized" 
-				print "%d gens" %gen 
+				print "%d gens" %len(self.game) 
 				break
 
 			breaker = 0
 			for item in self.game[-4:-2]:
 				if item == self.game[-1]:
 					print "cells blinking, infinite loop"
-					print "%d gens" %gen
+					print "%d gens" %len(self.game)
 					breaker = 1
 
 			if breaker == 1: break

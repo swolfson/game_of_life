@@ -65,10 +65,13 @@ class Board(object):
 				(x,y-1),(x,y+1),(x+1,y-1),(x+1,y),(x+1,y+1)]
 	
 	 	neighbors = []
+		#this is what I originally was doing -- 
+		#simple, encouraged by python
 		'''for coord in potential_neighbors:
 			if coord in self.board.keys():
 				neighbors.append(coord)
 		'''
+		#this is way faster:
 		for (i,j) in potential_neighbors:
 			if i < self.size and j < self.size:
 				if  i >= 0 and j >= 0 :
@@ -117,6 +120,7 @@ class LifeGame(object):
 		gen0 = Board(boardsize)
 		gen0.birth_formation_random(startingNumber)
 		self.game.append(gen0)
+		self.endcode = 0
 	
 	def next_board(self):
 		currentboard = self.game[-1]
@@ -139,20 +143,23 @@ class LifeGame(object):
 			if livecells < 1:
 				print "cells died" 
 				print "%d gens" %len(self.game)
+				self.endcode = 1
 				break
 			
 
 			if self.game[-1] == self.game[-2]:
 				print "cells stabilized" 
 				print "%d gens" %len(self.game) 
+				self.endcode = 2
 				break
 
 			breaker = 0
-			for item in self.game[-4:-2]:
+			for item in self.game[:-2]:
 				if item == self.game[-1]:
 					print "cells blinking, infinite loop"
 					print "%d gens" %len(self.game)
 					breaker = 1
+					self.endcode = 3
 
 			if breaker == 1: break
 					
